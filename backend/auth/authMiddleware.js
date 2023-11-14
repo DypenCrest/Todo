@@ -11,7 +11,9 @@ export const isUser = async (req, res, next) => {
       throw new Error("Unauthorized");
     }
     const userData = jwt.verify(token, process.env.JWT_ACCESS_Token_SECRET_KEY);
-    const user = await User.findOne({ email: userData.email });
+    const user = await User.findOne({
+      $or: [{ email: userData.email }, { username: userData.username }],
+    });
 
     if (!user) {
       throw new Error("Unauthorized");

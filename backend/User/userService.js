@@ -14,12 +14,18 @@ export const registerUser = async (req, res) => {
   }
 
   //Check if the username or email is already registered
-  const user = await User.findOne({
-    $or: [{ email: newUser.email }, { username: newUser.username }],
-  });
+  const user = await User.findOne({ username: newUser.username });
+  const userEmail = await User.findOne({ email: newUser.email });
 
   if (user) {
-    return res.status(409).send({ message: "User already exists!" });
+    return res
+      .status(409)
+      .send({ message: "Username already taken!" });
+  }
+  if (userEmail) {
+    return res
+      .status(409)
+      .send({ message: "User with this email already exists!" });
   }
 
   //hash the new user password and update
@@ -65,5 +71,5 @@ export const loginUser = async (req, res) => {
 
   user.password = undefined;
 
-  return res.status(200).json({ message:"Login Successful!", user, token });
+  return res.status(200).json({ message: "Login Successful!", user, token });
 };
